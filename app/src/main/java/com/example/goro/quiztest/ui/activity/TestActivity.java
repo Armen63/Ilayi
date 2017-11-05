@@ -1,5 +1,6 @@
 package com.example.goro.quiztest.ui.activity;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -31,48 +33,41 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 public class TestActivity extends AppCompatActivity implements View.OnClickListener {
+
+    // ===========================================================
+    // Constants
+    // ===========================================================
+    private static final String LOG_TAG = TestActivity.class.getSimpleName();
+
+
     private Context context = this;
     private DataBaseHelper myDbHelper;
     private View layout;
     private TextView text;
-    private Button b1;
-    private Button b2;
-    private Button b3;
-    private Button b4;
-    private Button back;
-    private Button update;
-    private TextView tx1;
-    private TextView tx2;
+    private Button btnOne;
+    private Button btnTwo;
+    private Button btnThree;
+    private Button btnFour;
+    private Button btnBack;
+    private Button btnStartAgain;
+    private TextView tvRussian;
+    private TextView tvEnglish;
     private RelativeLayout img;
-    private Random random;
     private Toast toast;
+    private Window window;
     private LayoutInflater inflater;
     private int i;
+    private int buttonInt;
+    private Random random;
     private List<String> answers;
     private SQLiteDatabase db;
     private Cursor cursor;
-    private ContentValues cv;
-    private Window window;
-    private SQLiteDatabase mydb1;
     private Cursor info;
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        int f = 1;
-        i--;
-        SQLiteDatabase db = myDbHelper.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put("counttest", i); //These Fields should be your String values of actual column names
-
-        db.update("info", cv, "_id=" + f, null);
-
-
-    }
+    private ContentValues cv;
+    private SQLiteDatabase mydb1;
 
 
     @Override
@@ -82,33 +77,51 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         findViews();
         init();
         setListeners();
-
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-
-            }
-        });
-
         quiz();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        i--;
+        db = myDbHelper.getWritableDatabase();
+        cv = new ContentValues();
+        cv.put("counttest", i); //These Fields should be your String values of actual column names
+        db.update("info", cv, "_id=" + 1, null);
+    }
+
+    // ===========================================================
+    // Methods
+    // ===========================================================
+    private void findViews() {
+        text = (TextView) findViewById(R.id.textView2);
+        btnBack = (Button) findViewById(R.id.btn_back_to_menu);
+        btnStartAgain = (Button) findViewById(R.id.ic_learn_activity_first_position);
+        btnOne = (Button) findViewById(R.id.button2);
+        btnTwo = (Button) findViewById(R.id.button1);
+        btnThree = (Button) findViewById(R.id.button3);
+        btnFour = (Button) findViewById(R.id.button4);
+        tvRussian = (TextView) findViewById(R.id.textView);
+        tvEnglish = (TextView) findViewById(R.id.textView1);
+        img = (RelativeLayout) findViewById(R.id.relativeLayout);
 
     }
 
     private void init() {
         initWindow();
         initDb();
-        cursor = db.rawQuery("SELECT * FROM top500 WHERE _id=" + i + "", null);
+        answers = new ArrayList<>();
+        random = new Random();
         inflater = getLayoutInflater();
     }
 
     private void setListeners() {
-        update.setOnClickListener(this);
-        back.setOnClickListener(this);
-        b1.setOnClickListener(this);
-        b2.setOnClickListener(this);
-        b3.setOnClickListener(this);
-        b4.setOnClickListener(this);
+        btnStartAgain.setOnClickListener(this);
+        btnBack.setOnClickListener(this);
+        btnOne.setOnClickListener(this);
+        btnTwo.setOnClickListener(this);
+        btnThree.setOnClickListener(this);
+        btnFour.setOnClickListener(this);
     }
 
     private void initDb() {
@@ -125,13 +138,11 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
             throw new Error("Unable to create database");
         }
 
-        try {
-            myDbHelper.openDataBase();
-        } catch (SQLException sqle) {
-            throw sqle;
-        }
+        myDbHelper.openDataBase();
 
         db = myDbHelper.getWritableDatabase();
+        cursor = db.rawQuery("SELECT * FROM top500 WHERE _id=" + i + "", null);
+
     }
 
     private void initWindow() {
@@ -145,71 +156,44 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
     public void quiz() {
 
         text.setText("" + i + "/500");
-        List<String> answers = new ArrayList<String>();
 
-
-        Random random = new Random();
-
-        SQLiteDatabase db = myDbHelper.getWritableDatabase();
-
-
-        Cursor c = db.rawQuery("SELECT * FROM top500 WHERE _id=" + i + "", null);
-        c.moveToFirst();
-        if (c != null && c.getCount() != 0) {
-            //   b2.setText(c.getString(c.getColumnIndex("russian")));
-            answers.add(c.getString(c.getColumnIndex("russian")));
-            tx1.setText(c.getString(c.getColumnIndex("russian")));
-            tx2.setText(c.getString(c.getColumnIndex("english")));
-            int id = getResources().getIdentifier((c.getString(c.getColumnIndex("img"))), "drawable", this.getPackageName());
+        cursor = db.rawQuery("SELECT * FROM top500 WHERE _id=" + i + "", null);
+        cursor.moveToFirst();
+        if (cursor != null && cursor.getCount() != 0) {
+            answers.add(cursor.getString(cursor.getColumnIndex("russian")));
+            tvRussian.setText(cursor.getString(cursor.getColumnIndex("russian")));
+            tvEnglish.setText(cursor.getString(cursor.getColumnIndex("english")));
+            int id = getResources().getIdentifier((cursor.getString(cursor.getColumnIndex("img"))), "drawable", this.getPackageName());
             img.setBackground(getResources().getDrawable(id));
-
         }
 
-
-        int rand1 = random.nextInt(499) + 1;
-
-
-        Cursor c1 = db.rawQuery("SELECT * FROM top500 WHERE _id=" + rand1 + "", null);
-        c1.moveToFirst();
-        if (c1 != null && c1.getCount() != 0) {
-            answers.add(c1.getString(c1.getColumnIndex("russian")));
+        for (int i = 0; i < 3; ++i) {
+            cursor = db.rawQuery("SELECT * FROM top500 WHERE _id=" + randomIntGenerator() + "", null);
+            cursor.moveToFirst();
+            if (cursor != null && cursor.getCount() != 0) {
+                answers.add(cursor.getString(this.cursor.getColumnIndex("russian")));
+            }
         }
 
-        int rand2 = random.nextInt(499) + 1;
-        Cursor c2 = db.rawQuery("SELECT * FROM top500 WHERE _id=" + rand2 + "", null);
-        c2.moveToFirst();
-        if (c2 != null && c2.getCount() != 0) {
-            answers.add(c2.getString(c1.getColumnIndex("russian")));
-        }
+        buttonInt = random.nextInt(4);
+        btnOne.setText(answers.get(buttonInt));
+        answers.remove(buttonInt);
 
+        buttonInt = random.nextInt(3);
+        btnTwo.setText(answers.get(buttonInt));
+        answers.remove(buttonInt);
 
-        int rand3 = random.nextInt(499) + 1;
-        Cursor c3 = db.rawQuery("SELECT * FROM top500 WHERE _id=" + rand3 + "", null);
-        c3.moveToFirst();
-        if (c3 != null && c3.getCount() != 0) {
-            answers.add(c3.getString(c1.getColumnIndex("russian")));
-        }
+        buttonInt = random.nextInt(2);
+        btnThree.setText(answers.get(buttonInt));
+        answers.remove(buttonInt);
 
-
-        Random tii = new Random();
-        int kk = tii.nextInt(4);
-        b1.setText(answers.get(kk));
-        answers.remove(kk);
-
-        Random tiv = new Random();
-        int k = tiv.nextInt(3);
-        b2.setText(answers.get(k));
-        answers.remove(k);
-
-        Random ti = new Random();
-        int p = ti.nextInt(2);
-        b3.setText(answers.get(p));
-        answers.remove(p);
-
-        b4.setText(answers.get(0));
+        btnFour.setText(answers.get(0));
         i++;
     }
 
+    public int randomIntGenerator() {
+        return random.nextInt(499) + 1;
+    }
 
     public void startAgain() {
         AlertDialog.Builder alertDialogBuilder;
@@ -243,10 +227,9 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         // toast.setDuration(Toast.LENGTH_SHORT);
         toast.setView(layout);
         toast.show();
-        new android.os.Handler().postDelayed(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                /* Create an Intent that will start the Menu-Activity. */
                 toast.cancel();
             }
         }, 800);
@@ -260,30 +243,20 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
         toast.setView(layout);
         toast.show();
-        new android.os.Handler().postDelayed(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                /* Create an Intent that will start the Menu-Activity. */
                 toast.cancel();
             }
         }, 600);
 
     }
 
-    private void findViews() {
-        text = (TextView) findViewById(R.id.textView2);
-        back = (Button) findViewById(R.id.btn_back_to_menu);
-        update = (Button) findViewById(R.id.ic_learn_activity_first_position);
-        b1 = (Button) findViewById(R.id.button2);
-        b2 = (Button) findViewById(R.id.button1);
-        b3 = (Button) findViewById(R.id.button3);
-        b4 = (Button) findViewById(R.id.button4);
-        tx1 = (TextView) findViewById(R.id.textView);
-        tx2 = (TextView) findViewById(R.id.textView1);
-        img = (RelativeLayout) findViewById(R.id.relativeLayout);
 
-    }
 
+    // ===========================================================
+    // Click Listeners
+    // ===========================================================
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -294,24 +267,24 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
                 onBackPressed();
                 break;
             case R.id.button1:
-                buttonChecker(b2);
+                buttonChecker(btnTwo);
                 break;
             case R.id.button2:
-                buttonChecker(b1);
+                buttonChecker(btnOne);
                 break;
             case R.id.button3:
-                buttonChecker(b3);
+                buttonChecker(btnThree);
                 break;
             case R.id.button4:
-                buttonChecker(b4);
+                buttonChecker(btnFour);
                 break;
         }
     }
 
     private void buttonChecker(Button btnPressed) {
-        if (btnPressed.getText().equals(tx1.getText())) {
+        if (btnPressed.getText().equals(tvRussian.getText())) {
             right();
-            new android.os.Handler().postDelayed(new Runnable() {
+            new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     quiz();
