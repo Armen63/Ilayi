@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@drawable/backbt1"
+    android:orientation="vertical">
+
+
+    <Button
+        android:id="@+id/btn_learn_activity_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="4dp"
+        android:background="@mipmap/icon_back" />
+
+
+    <TextView
+        android:id="@+id/tv_learn_activity_trophies"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:textColor="#ffff"
+        android:textSize="30sp"
+
+        />
+
+
+    <Button
+        android:id="@+id/ic_learn_activity_first_position"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/btn_learn_activity_back"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:background="@mipmap/up1" />
+
+
+    <RelativeLayout
+        android:id="@+id/learn1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="47dp"
+        android:layout_marginTop="47dp"
+        android:elevation="15dp"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+
+            android:id="@+id/relativeLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="57dp"
+            android:background="#750d0c0c">
+
+            <TextView
+                android:id="@+id/eng"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:text="english"
+                android:textColor="#ffffff"
+                android:textSize="60sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_above="@+id/btn_learn_activity_previous"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="17dp"
+            android:background="#750d0c0c">
+
+
+            <TextView
+                android:id="@+id/rus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+
+
+                android:text="russian"
+                android:textColor="#ffffff"
+                android:textSize="35sp" />
+
+
+        </RelativeLayout>
+
+        <ImageButton
+            android:id="@+id/btn_learn_activity_previous"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="3dp"
+            android:alpha="0.5"
+            android:background="@drawable/previous"
+            android:elevation="5dp" />
+
+        <ImageButton
+            android:id="@+id/btn_learn_activity_next"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="3dp"
+            android:alpha="0.5"
+            android:background="@drawable/nextt"
+            android:elevation="5dp" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
