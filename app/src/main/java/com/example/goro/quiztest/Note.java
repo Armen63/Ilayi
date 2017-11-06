@@ -1,4 +1,4 @@
-package com.example.goro.quiztest.db.model;
+package com.example.goro.quiztest;
 
 /**
  * Created by Goro on 05.10.2017.

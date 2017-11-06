@@ -1,4 +1,4 @@
-package com.example.goro.quiztest.ui.activity;
+package com.example.goro.quiztest;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -16,10 +16,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.goro.quiztest.R;
-import com.example.goro.quiztest.db.DataBaseHelper;
-import com.example.goro.quiztest.db.model.Note;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,19 +58,7 @@ public class NoteActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_note);
         findViews();
         init();
-        createAndOpenDb();
         setListeners();
-    }
-
-
-    private void createAndOpenDb() {
-        try {
-            dbHelper.createDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
-        dbHelper.openDataBase();
-        itemForAdding();
     }
 
     private void findViews() {
@@ -91,7 +75,14 @@ public class NoteActivity extends Activity implements View.OnClickListener {
         not = new ArrayList<>();
         boxAdapter = new BoxAdapter(this, not);
         dbHelper = new DataBaseHelper(this);
+        try {
+            dbHelper.createDataBase();
+        } catch (IOException ioe) {
+            throw new Error("Unable to create database");
+        }
+        dbHelper.openDataBase();
         db = dbHelper.getWritableDatabase();
+        itemForAdding();
     }
 
 
@@ -179,8 +170,6 @@ public class NoteActivity extends Activity implements View.OnClickListener {
         alertDialog.show();
         return false;
     }
-
-
 
 
     public void itemForAdding() {

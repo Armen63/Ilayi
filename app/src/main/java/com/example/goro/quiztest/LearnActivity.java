@@ -1,4 +1,4 @@
-package com.example.goro.quiztest.ui.activity;
+package com.example.goro.quiztest;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -16,9 +16,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.example.goro.quiztest.db.DataBaseHelper;
-import com.example.goro.quiztest.R;
 
 import java.io.IOException;
 

@@ -1,11 +1,10 @@
-package com.example.goro.quiztest.ui.activity;
+package com.example.goro.quiztest;
 
 import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,9 +23,6 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.goro.quiztest.R;
-import com.example.goro.quiztest.db.DataBaseHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -294,4 +290,3 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
             wrong();
     }
 }
-

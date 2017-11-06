@@ -1,17 +1,15 @@
-package com.example.goro.quiztest.ui.activity;
+package com.example.goro.quiztest;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.example.goro.quiztest.R;
-import com.example.goro.quiztest.db.DataBaseHelper;
 
 import java.io.IOException;
 
@@ -40,21 +38,10 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.menu_activity);
         findViews();
         init();
-        createAndOpenDb();
         setter();
         setListeners();
     }
 
-    private void createAndOpenDb() {
-        try {
-            myDbHelper.createDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
-        myDbHelper.openDataBase();
-        info.moveToFirst();
-        position = info.getInt(info.getColumnIndex("countlearn"));
-    }
 
     private void setter() {
         text1.setTypeface(face);
@@ -73,8 +60,17 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     private void init() {
         face = Typeface.createFromAsset(getAssets(), "font/Appetite.ttf");
         myDbHelper = new DataBaseHelper(this);
+        try {
+            myDbHelper.createDataBase();
+        } catch (IOException ioe) {
+            throw new Error("Unable to create database");
+        }
+        myDbHelper.openDataBase();
         mydb1 = myDbHelper.getReadableDatabase();
         info = mydb1.rawQuery("SELECT * FROM info WHERE _id=" + 1 + "", null);
+        info.moveToFirst();
+        position = info.getInt(info.getColumnIndex("countlearn"));
+
     }
 
     private void findViews() {
@@ -92,6 +88,19 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
+        try {
+            myDbHelper.createDataBase();
+        } catch (IOException ioe) {
+            throw new Error("Unable to create database");
+        }
+
+        try {
+            myDbHelper.openDataBase();
+        } catch (SQLException sql) {
+            throw sql;
+        }
+        info = mydb1.rawQuery("SELECT * FROM info WHERE _id=" + 1 + "", null);
+        info.moveToFirst();
         position = info.getInt(info.getColumnIndex("counttest"));
         text.setTypeface(face);
         text.setText("" + (position - 1) + "");
