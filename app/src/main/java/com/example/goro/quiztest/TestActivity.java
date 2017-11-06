@@ -122,12 +122,6 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initDb() {
         myDbHelper = new DataBaseHelper(this);
-        mydb1 = myDbHelper.getReadableDatabase();
-        info = mydb1.rawQuery("SELECT * FROM info WHERE _id=" + 1 + "", null);
-        info.moveToFirst();
-        i = info.getInt(info.getColumnIndex("counttest"));
-
-
         try {
             myDbHelper.createDataBase();
         } catch (IOException ioe) {
@@ -135,6 +129,11 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         myDbHelper.openDataBase();
+        mydb1 = myDbHelper.getReadableDatabase();
+        info = mydb1.rawQuery("SELECT * FROM info WHERE _id=" + 1 + "", null);
+        info.moveToFirst();
+        i = info.getInt(info.getColumnIndex("counttest"));
+
 
         db = myDbHelper.getWritableDatabase();
         cursor = db.rawQuery("SELECT * FROM top500 WHERE _id=" + i + "", null);
