@@ -1,0 +1,191 @@
+import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+import com.frismos.olympusgame.data.CreatureData;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class SoundManager {
+	
+	public static final String SOUND_BREATH = "breath";
+	public static final String SOUND_PURR = "purr";
+	
+	public static final String SOUND_ENTER_HABITAT = "habitat";
+//	public static final String SOUND_ENTER_TEMPLE = "enter_temple";
+	public static final String SOUND_ENTER_FARM = "enter_farm";
+	public static final String SOUND_COIN = "coin";
+	
+	public static final String SOUND_BABY_CRY = "baby_cry";
+	public static final String SOUND_CLEAN = "clean";
+	public static final String SOUND_DIALOG_POPUP = "dialog_popup";
+	public static final String SOUND_LEVEL_UP = "level_up";
+	public static final String SOUND_MENU_BTN = "menu_btn";
+	public static final String SOUND_SPEED_UP = "speed_up";
+
+	public static final String SOUND_RACING = "snd/Racing_Theme.mp3";
+	public static final String SOUND_RACING_TGDIN = "snd/tgdin.mp3";
+	
+	public boolean isPlaySound;
+	public List<String> preloadSounds = new ArrayList<>();
+	/**
+	 * Map for keeping sounds for loading one time.
+	 * The key is the file path
+	 * Value is the Sound object
+	 */
+	private Map<String, Music> soundMap = new HashMap<String, Music>();
+	private Map<String, Sound> sMap = new HashMap<String, Sound>();
+	
+	private static SoundManager instance = null;
+	
+	private static final String SOUND_PATH = "snd/pet/";
+	
+	public SoundManager() {
+		preloadSounds.add(SOUND_ENTER_HABITAT);
+		preloadSounds.add(SOUND_ENTER_FARM);
+		preloadSounds.add(SOUND_COIN);
+		preloadSounds.add(SOUND_BABY_CRY);
+		preloadSounds.add(SOUND_CLEAN);
+		preloadSounds.add(SOUND_DIALOG_POPUP);
+		preloadSounds.add(SOUND_LEVEL_UP);
+		preloadSounds.add(SOUND_MENU_BTN);
+		preloadSounds.add(SOUND_SPEED_UP);
+		
+	}
+	
+	public static SoundManager $() {
+		if (instance == null)
+			instance = new SoundManager();
+		return instance;
+	}
+
+	public static void setInstanceNull(){
+		instance = null;
+	}
+	
+	public void play(Sound sound) {
+		if (isPlaySound) {
+			sound.play();
+		}
+	}
+	
+	public void playSound(String soundName, boolean loop) {
+		//loadSounds(soundName, birdData, loop);
+		if (isPlaySound) {
+			String fileName = getSoundFilePath(soundName);
+			Sound sound = sMap.get(fileName);
+			if(sound == null) {
+				try {
+					sound = Gdx.audio.newSound(Gdx.files.getFileHandle(fileName, FileType.Internal));
+					sMap.put(fileName, sound);
+				}catch(Exception ex) {
+					fileName = getDefaultFilemname(soundName);
+					sound = sMap.get(fileName);
+					if(sound == null) {
+						try {
+							sound = Gdx.audio.newSound(Gdx.files.getFileHandle(fileName, FileType.Internal));
+							sMap.put(fileName, sound);
+						}catch(Exception e) {
+							//Do nothing
+						}
+					}
+				}
+			}
+			
+			if(sound != null) {
+//				sound.setLooping(loop);
+				sound.play();
+			}		
+		}
+
+	}
+	
+	
+	public void playSoundDefault(String soundName, boolean loop) {
+		//loadSounds(soundName, birdData, loop);
+		if (isPlaySound) {
+			String fileName = SOUND_PATH  + soundName + ".mp3";
+			Music sound = soundMap.get(fileName);
+			if(sound == null) {
+				try {
+					sound = Gdx.audio.newMusic(Gdx.files.getFileHandle(fileName, FileType.Internal));
+					soundMap.put(fileName, sound);
+				}catch(Exception ex) {
+					fileName = getDefaultFilemname(soundName);
+					sound = soundMap.get(fileName);
+					if(sound == null) {
+						try {
+							sound = Gdx.audio.newMusic(Gdx.files.getFileHandle(fileName, FileType.Internal));
+							soundMap.put(fileName, sound);
+						}catch(Exception e) {
+							//Do nothing
+						}
+					}
+				}
+			}
+			
+			if(sound != null) {
+				sound.setLooping(loop);
+				sound.play();
+			}		
+		}
+
+	}
+	
+	public void stopSound(String soundName, CreatureData birdData) {
+		String fileName = getPetFilename(soundName, birdData);
+		Music sound = soundMap.get(fileName);
+		if(sound == null) {
+			fileName = getDefaultFilemname(soundName);
+			sound = soundMap.get(fileName);
+		}
+		
+		if(sound != null) {
+			sound.stop();
+		}
+		
+	}
+
+	public void play(Music sound, boolean isLooping) {
+		if (isPlaySound) {
+			sound.play();
+			sound.setLooping(isLooping);
+		}
+	}
+
+	public static void pause(Music sound) {
+        if (sound != null) {
+            sound.pause();
+        }
+	}
+
+	public static void stop(Music sound) {
+        if (sound != null) {
+            sound.stop();
+        }
+	}
+
+	private String getDefaultFilemname(String soundName) {
+		return SOUND_PATH + soundName + ".mp3";
+	}
+	
+	private String getPetFilename(String soundName, CreatureData birdData) {
+		return SOUND_PATH + birdData.birdId + "/" + soundName + ".mp3";
+	}
+	
+	private String getSoundFilePath(String soundName) {
+		return SOUND_PATH  + soundName + ".mp3";
+	}
+	
+	public void loadSounds() {
+		for (int i = 0; i < preloadSounds.size(); i++) {
+			String filePath = getSoundFilePath(preloadSounds.get(i));
+			Sound sound = Gdx.audio.newSound(Gdx.files.getFileHandle(filePath, FileType.Internal));
+			sMap.put(filePath, sound);
+		}
+	}
+	
+}
